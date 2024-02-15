@@ -1,61 +1,49 @@
-// const key = new Key();
-
-// const house = new MyHouse(key);
-// const person = new Person(key);
-
-// house.openDoor(person.getKey());
-
-// house.comeIn(person);
-
-// export {};
-
-class Key {}
-
-class MyHouse {
-  private key: Key;
-
-  constructor(key: Key) {
-    this.key = key;
-  }
-
-  openDoor(personKey: Key): void {
-    if (this.key === personKey) {
-      console.log('Відкриваю двері...');
-    } else {
-      console.log('Відмовлено в доступі! Невірний ключ.');
-    }
-  }
-
-  comeIn(person: Person): void {
-    // Логіка входу в будинок
+class Key {
+  constructor(private signature: number = Math.random()) {}
+  getSignature(): number {
+    return this.signature;
   }
 }
-
 class Person {
-  private key: Key;
-
-  constructor(key: Key) {
-    this.key = key;
-  }
-
+  constructor(private key: Key) {}
   getKey(): Key {
     return this.key;
   }
 }
+abstract class House {
+  constructor(
+    protected key: Key,
+    protected door: boolean = false,
+    private tenants: Person[] = []
+  ) {}
+  comeIn(person: Person): void {
+    if (this.door) {
+      this.tenants.push(person);
+      console.log('Come in');
+    } else {
+      console.log('Sorry, is closed');
+    }
+  }
+  abstract openDoor(key: Key): void;
+}
+class MyHouse extends House {
+  openDoor(key: Key): void {
+    if (key.getSignature() === this.key.getSignature()) {
+      this.door = true;
+      console.log('The door is open');
+    } else {
+      console.log('The key is wrong');
+    }
+  }
+}
 
-// Створення ключа
 const key = new Key();
 
-// Створення будинку з використанням ключа
 const house = new MyHouse(key);
-
-// Створення персони з використанням того ж ключа
 const person = new Person(key);
 
-// Відкриття дверей будинку з ключем, який у персони
 house.openDoor(person.getKey());
 
-// Вхід персони до будинку
 house.comeIn(person);
 
 export {};
